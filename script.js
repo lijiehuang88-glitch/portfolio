@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { VRMLoaderPlugin } from '@pixiv/three-vrm';
 
-const GEMINI_API_KEY = "AIzaSyBVaW2JT37qlw8EJIMgRoJ22sG0WRwQly8"; 
+const GEMINI_API_KEY = "AIzaSyAclZLGWl9bMFXv-wIKrhaJpRxxKOXnq3Y"; 
 
 const loaderElement = document.getElementById('loader');
 const progressBar = document.getElementById('progress-bar');
