@@ -326,7 +326,8 @@ if (posterImg) {
 
 async function callGeminiAPI(userMessage) {
     if (!GEMINI_API_KEY) return "API Key 錯誤 [angry]";
-    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    // 使用您清單上最快的模型：Gemini 2.5 Flash
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
     
     const systemPrompt = `
     【角色設定】你叫ST(Seth)，紅髮傲嬌少女... (略)
