@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { VRMLoaderPlugin } from '@pixiv/three-vrm';
 
-const GEMINI_API_KEY = "AIzaSyAclZLGWl9bMFXv-wIKrhaJpRxxKOXnq3Y"; 
+const GEMINI_API_KEY = "AIzaSyBOaeoYwFszZOVUTKdKYh4gNosBXwSTGBw"; 
 
 const loaderElement = document.getElementById('loader');
 const progressBar = document.getElementById('progress-bar');
@@ -375,8 +375,16 @@ let chatHistory = [
 ];
     try {
         const response = await fetch(API_URL, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt + "\nUser: " + userMessage + "\nAI:" }] }] })
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                contents: [{ 
+                    parts: [{ 
+                        // ▼ 修改重點：這裡原本是 systemPrompt (小寫)，改為 SYSTEM_PROMPT (大寫) ▼
+                        text: SYSTEM_PROMPT + "\nUser: " + userMessage + "\nAI:" 
+                    }] 
+                }] 
+            })
         });
         
         if (response.status === 429) {
@@ -384,8 +392,19 @@ let chatHistory = [
         }
 
         const data = await response.json();
+        
+        // 如果 API 回傳錯誤結構 (例如模型名稱錯誤)，可以在這裡檢查
+        if (!data.candidates) {
+            console.error("Gemini API Error:", data); // 在主控台顯示 API 回傳的錯誤
+            return "腦袋一片空白... (API 錯誤) [sad]";
+        }
+
         return data.candidates?.[0]?.content?.parts?.[0]?.text || "... [sad]";
-    } catch (e) { return "訊號中斷 [angry]"; }
+    } catch (e) { 
+        // ▼ 修改重點：加上 console.error 讓錯誤現形 ▼
+        console.error("連線錯誤詳情:", e); 
+        return "訊號中斷 [angry]"; 
+    }
 }
 
 window.sendMessage = async function() {
