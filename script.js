@@ -326,8 +326,8 @@ if (posterImg) {
 
 async function callGeminiAPI(userMessage) {
     if (!GEMINI_API_KEY) return "API Key 錯誤 [angry]";
-    // 使用您清單上最快的模型：Gemini 2.5 Flash
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    // 使用您清單上最快的模型：Gemini 2.0 Flash
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
     
     // 定義 ST 的人設 (貓系/隊長專屬/接待員模式)
 const SYSTEM_PROMPT = `
