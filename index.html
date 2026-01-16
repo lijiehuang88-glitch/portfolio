@@ -1,386 +1,773 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>3D Model使我快樂</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Noto+Serif+TC:wght@300;400;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Noto+Serif+TC:wght@300;400;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
 
     <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
-                "@pixiv/three-vrm": "https://unpkg.com/@pixiv/three-vrm@2.1.0/lib/three-vrm.module.js"
-            }
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+          "@pixiv/three-vrm": "https://unpkg.com/@pixiv/three-vrm@2.1.0/lib/three-vrm.module.js"
         }
+      }
     </script>
-</head>
-<body class="main-body">
- 
+  </head>
+  <body class="main-body">
+    <button id="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+
     <div id="loader">
-        <div class="loader-text">SYSTEM INITIALIZING...</div>
-        <div class="progress-bar-container"><div id="progress-bar"></div></div>
-        <div id="loading-status" style="margin-top: 10px; color: #666; font-family: 'Space Mono'; font-size: 0.8rem;">Loading 3D Assets...</div>
+      <div class="loader-text">SYSTEM INITIALIZING...</div>
+      <div class="progress-bar-container"><div id="progress-bar"></div></div>
+      <div
+        id="loading-status"
+        style="
+          margin-top: 10px;
+          color: #666;
+          font-family: 'Space Mono';
+          font-size: 0.8rem;
+        "
+      >
+        Loading 3D Assets...
+      </div>
     </div>
-    
+
     <div id="lightbox-overlay" onclick="closeLightbox()">
-        <img id="lightbox-img" src="" alt="Zoomed Image">
+      <img id="lightbox-img" src="" alt="Zoomed Image" />
     </div>
 
     <div id="avatar-canvas"></div>
     <div id="speech-bubble">哼，有什麼事快說。</div>
-    
+
     <button id="close-chat-btn" onclick="toggleChat()">×</button>
 
     <aside class="sidebar">
-        <div class="side-avatar-container">
-            <img src="images/avatar.png" alt="Avatar" onerror="this.src='https://via.placeholder.com/180x180?text=Avatar'">
-        </div>
-        <div class="lang-switch">
-            <button class="lang-btn active" onclick="setLang('zh', this)">繁中</button>
-            <button class="lang-btn" onclick="setLang('en', this)">EN</button>
-            <button class="lang-btn" onclick="setLang('jp', this)">日本語</button>
-        </div>
-        <nav class="side-nav">
-            <h3 data-i18n="menu_title">導覽選單</h3>
-            <ul>
-                <li>
-                    <a href="#" onclick="switchSection('about')" id="nav-about">
-                        <span class="nav-icon color-blue">👤</span>
-                        <span data-i18n="menu_about" class="text-about">關於我</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" onclick="switchSection('works')" id="nav-works">
-                        <span class="nav-icon color-pink">🎨</span>
-                        <span data-i18n="menu_works" class="text-works">作品展示</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" onclick="switchSection('thesis')" id="nav-thesis">
-                        <span class="nav-icon color-gold">★</span>
-                        <span data-i18n="menu_thesis" class="text-thesis">專題作品</span>
-                    </a>
-                    <ul class="sub-nav" id="thesis-sub-nav">
-                        <li><a href="#t-intro" data-i18n="submenu_intro">作品簡介</a></li>
-                        <li><a href="#t-world" data-i18n="submenu_world">世界觀</a></li>
-                        <li><a href="#t-game" data-i18n="submenu_game">實機畫面</a></li>
-                        <li><a href="#t-char" data-i18n="submenu_char">角色介紹</a></li>
-                        <li><a href="#t-team" data-i18n="submenu_team">開發團隊</a></li>
-                        <li><a href="#t-contrib" data-i18n="submenu_contrib">個人貢獻</a></li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="#" onclick="switchSection('contact')" id="nav-contact">
-                        <span class="nav-icon color-green">📧</span>
-                        <span data-i18n="menu_contact" class="text-contact">聯絡資訊</span>
-                    </a>
-                </li>
+      <div class="side-avatar-container">
+        <img
+          src="images/avatar.png"
+          alt="Avatar"
+          onerror="this.src='https://via.placeholder.com/180x180?text=Avatar'"
+        />
+      </div>
+      <div class="lang-switch">
+        <button class="lang-btn active" onclick="setLang('zh', this)">
+          繁中
+        </button>
+        <button class="lang-btn" onclick="setLang('en', this)">EN</button>
+        <button class="lang-btn" onclick="setLang('jp', this)">日本語</button>
+      </div>
+      <nav class="side-nav">
+        <h3 data-i18n="menu_title">導覽選單</h3>
+        <ul>
+          <li>
+            <a href="#" onclick="switchSection('about')" id="nav-about">
+              <span class="nav-icon color-blue">👤</span>
+              <span data-i18n="menu_about" class="text-about">關於我</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" onclick="switchSection('works')" id="nav-works">
+              <span class="nav-icon color-pink">🎨</span>
+              <span data-i18n="menu_works" class="text-works">作品展示</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" onclick="switchSection('thesis')" id="nav-thesis">
+              <span class="nav-icon color-gold">★</span>
+              <span data-i18n="menu_thesis" class="text-thesis">專題作品</span>
+            </a>
+            <ul class="sub-nav" id="thesis-sub-nav">
+              <li><a href="#t-intro" data-i18n="submenu_intro">作品簡介</a></li>
+              <li><a href="#t-world" data-i18n="submenu_world">世界觀</a></li>
+              <li><a href="#t-game" data-i18n="submenu_game">實機畫面</a></li>
+              <li><a href="#t-char" data-i18n="submenu_char">角色介紹</a></li>
+              <li><a href="#t-team" data-i18n="submenu_team">開發團隊</a></li>
+              <li>
+                <a href="#t-contrib" data-i18n="submenu_contrib">個人貢獻</a>
+              </li>
             </ul>
-        </nav>
+          </li>
+          <li>
+            <a href="#" onclick="switchSection('contact')" id="nav-contact">
+              <span class="nav-icon color-green">📧</span>
+              <span data-i18n="menu_contact" class="text-contact"
+                >聯絡資訊</span
+              >
+            </a>
+          </li>
+        </ul>
+      </nav>
     </aside>
 
     <main class="main-content">
-        <div id="section-about">
-             <section class="content-card">
-                <h2 data-i18n="about_title">關於我</h2>
-                <div class="article-body">
-                    <p data-i18n="about_intro">你好！我是 <strong>黃立杰</strong>，目前就讀於<strong>龍華科技大學 多媒體與遊戲發展科學系</strong>。</p>
-                    <p data-i18n="about_desc">自認為是一個充滿好奇心的「技術應用者」。我不將自己侷限在單一領域，而是喜歡探索新工具的可能性——特別是 <strong>AI 技術</strong>與 <strong>3D 互動</strong>的結合。雖然我不從零開始撰寫複雜的程式碼，但我擅長<strong>研究並重現</strong>技術，將現有的資源整合成有趣的互動體驗。</p>
-                    <p data-i18n="about_hobby">我的創作養分來自於廣泛的閱讀。從<strong>文學與漫畫</strong>中學習敘事結構，從<strong>心理學</strong>中分析角色動機，甚至從<strong>數學</strong>中尋找邏輯的美感。這些跨領域的知識，讓我在規劃遊戲世界觀與系統架構時，能兼具感性與理性。</p>
+      <div id="section-about">
+        <section class="content-card">
+  <h2 data-i18n="about_title">自我介紹</h2>
+  <div class="article-body">
+    <p data-i18n="about_intro">
+      你好！我是 <strong>黃立杰 (LJ)</strong>，目前就讀於<strong
+        >龍華科技大學 多媒體與遊戲發展科學系</strong
+      >。
+    </p>
+    <p data-i18n="about_desc">
+      定位為<strong>跨領域技術整合者</strong>。我不將自己定義為單純的程式設計師，而是專注於
+      <strong>Generative AI</strong> 與 <strong>Web 3D</strong> 的應用落地。
+      擅長研究新技術特性，並將其轉化為實際的互動專案，具備將抽象概念快速實體化的執行力。
+    </p>
+    <p data-i18n="about_hobby">
+      兼具<strong>感性敘事</strong>與<strong>理性邏輯</strong>。透過文學、心理學與數學的跨領域涉獵，讓我在進行遊戲企劃與系統設計時，能同時兼顧世界觀的厚度與機制運作的合理性。
+    </p>
+  </div>
+</section>
+
+        <section class="content-card">
+          <h2 data-i18n="skills_title">專業技能</h2>
+
+          <h5
+            style="color: #aaa; margin-bottom: 10px; font-size: 0.9rem"
+            data-i18n="cat_game"
+          >
+            遊戲企劃 & 核心能力
+          </h5>
+          <div
+            class="skills-container"
+            style="margin-top: 0; margin-bottom: 20px"
+          >
+            <span class="skill-tag">Unity</span>
+            <span class="skill-tag" data-i18n="skill_unreal">Unreal</span>
+            <span class="skill-tag" data-i18n="skill_narrative"
+              >敘事設計 & 世界觀</span
+            >
+            <span class="skill-tag" data-i18n="skill_system">系統架構規劃</span>
+            <span class="skill-tag">Level Design</span>
+          </div>
+
+          <h5
+            style="color: #aaa; margin-bottom: 10px; font-size: 0.9rem"
+            data-i18n="cat_tech"
+          >
+            技術研究 & AI 應用
+          </h5>
+          <div
+            class="skills-container"
+            style="margin-top: 0; margin-bottom: 20px"
+          >
+            <span class="skill-tag">Generative AI Workflow</span>
+            <span class="skill-tag">LLM Integration</span>
+            <span class="skill-tag" data-i18n="skill_logic">程式邏輯概念</span>
+            <span class="skill-tag">Web 3D / Three.js</span>
+          </div>
+
+          <h5
+            style="color: #aaa; margin-bottom: 10px; font-size: 0.9rem"
+            data-i18n="cat_tools"
+          >
+            生產力工具
+          </h5>
+          <div class="skills-container" style="margin-top: 0">
+            <span class="skill-tag">Axure RP</span>
+            <span class="skill-tag">Git / Github</span>
+            <span class="skill-tag">HTML5 / CSS3</span>
+          </div>
+        </section>
+
+        <section class="content-card">
+          <h2 data-i18n="exp_title">經歷</h2>
+          <div class="experience-list">
+            <div class="experience-item">
+              <span class="experience-date" data-i18n="date_research"
+                >2024/09 – 迄今</span
+              >
+              <h3 class="experience-title" data-i18n="job_research_title">
+                AI 技術應用研究 (個人計畫)
+              </h3>
+              <p class="experience-desc" data-i18n="job_research_desc">
+                致力於研究 Generative AI
+                工具的使用方式，並嘗試將其導入遊戲開發流程與網頁互動中，進行技術再現與測試。
+              </p>
+            </div>
+            <div class="experience-item">
+              <span class="experience-date">2024/07 - 2024/08</span>
+              <h3 class="experience-title" data-i18n="job_px_title">
+                全聯福利中心 - 收銀員
+              </h3>
+              <p class="experience-desc" data-i18n="job_px_desc">
+                在快節奏的環境下保持冷靜與精準，培養了良好的抗壓性與即時問題解決能力。
+              </p>
+            </div>
+            <div class="experience-item">
+              <span class="experience-date">2020/02 - 2022/05</span>
+              <h3 class="experience-title" data-i18n="job_gas_title">
+                金龍瓦斯股份有限公司 - 財務／會計助理
+              </h3>
+              <p class="experience-desc" data-i18n="job_gas_desc">
+                協助處理帳務與報表。這段經歷訓練了我對數據的敏感度，以及處理繁瑣事務時的細心與耐性。
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-card">
+          <h2 data-i18n="edu_title">學歷</h2>
+          <div class="experience-list">
+            <div class="experience-item">
+              <span class="experience-date" data-i18n="date_lhu"
+                >2022 - 2026 (預期)</span
+              >
+              <h3 class="experience-title" data-i18n="edu_lhu_title">
+                龍華科技大學 - 多媒體與遊戲發展科學系
+              </h3>
+              <p class="experience-desc" data-i18n="edu_lhu_desc">
+                主修多媒體互動與遊戲開發。在學期間擔任專題組長，負責專案統籌與企劃設計。
+              </p>
+            </div>
+            <div class="experience-item">
+              <span class="experience-date">2019 - 2022</span>
+              <h3 class="experience-title" data-i18n="edu_hs_title">
+                羅東高級商業學校 - 商業經營科
+              </h3>
+              <p class="experience-desc" data-i18n="edu_hs_desc">
+                建立商業基礎與邏輯思維。
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div id="section-works" style="display: none">
+        <section class="content-card">
+          <h2 data-i18n="project_title">精選作品</h2>
+          <div class="projects-grid">
+            <div class="project-card">
+              <div class="card-image">
+                <img
+                  src="https://placehold.co/600x400/0f172a/64b5f6?text=Seth+AI"
+                  alt="AI Project"
+                />
+              </div>
+              <div class="card-info">
+                <h3 data-i18n="work_seth_title">Seth: AI 虛擬助理研究</h3>
+                <p data-i18n="work_seth_desc">
+                  這是一個結合 Google Gemini API 與 Web 3D
+                  技術的實驗性專案。透過串接大語言模型，讓 3D VRM
+                  角色具備對話能力，探索未來網頁互動的可能性。
+                </p>
+                <div class="card-links">
+                  <a href="#" class="link-btn" data-i18n="btn_details"
+                    >目前頁面即展示</a
+                  >
                 </div>
-            </section>
-
-             <section class="content-card">
-                <h2 data-i18n="skills_title">專業技能</h2>
-                
-                <h5 style="color:#aaa; margin-bottom:10px; font-size:0.9rem;" data-i18n="cat_game">遊戲企劃 & 核心能力</h5>
-                <div class="skills-container" style="margin-top:0; margin-bottom: 20px;">
-                    <span class="skill-tag">Unity</span>
-                    <span class="skill-tag" data-i18n="skill_unreal">Unreal</span>
-                    <span class="skill-tag" data-i18n="skill_narrative">敘事設計 & 世界觀</span>
-                    <span class="skill-tag" data-i18n="skill_system">系統架構規劃</span>
-                    <span class="skill-tag">Level Design</span>
+              </div>
+            </div>
+            <div class="project-card">
+              <div class="card-image">
+                <img
+                  src="images/thesis_cover.png"
+                  alt="Dust Soul"
+                  onerror="this.src='https://placehold.co/600x400/333/ffd700?text=Dust+Soul'"
+                />
+              </div>
+              <div class="card-info">
+                <h3 data-i18n="t_name">《塵世之魂》 (Dust Soul)</h3>
+                <p data-i18n="work_dust_desc">
+                  擔任隊長與企劃。負責世界觀架構（基於心理學與社會學概念）、系統邏輯規劃以及關卡動線設計。協調程式與美術團隊，確保專案如期完成。
+                </p>
+                <div class="card-links">
+                  <a
+                    href="#"
+                    onclick="switchSection('thesis')"
+                    class="link-btn"
+                    data-i18n="btn_details"
+                    >查看完整專題</a
+                  >
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
 
-                <h5 style="color:#aaa; margin-bottom:10px; font-size:0.9rem;" data-i18n="cat_tech">技術研究 & AI 應用</h5>
-                <div class="skills-container" style="margin-top:0; margin-bottom: 20px;">
-                    <span class="skill-tag">Generative AI Workflow</span>
-                    <span class="skill-tag">LLM Integration</span>
-                    <span class="skill-tag" data-i18n="skill_logic">程式邏輯概念</span>
-                    <span class="skill-tag">Web 3D / Three.js</span>
+      <div id="section-thesis" style="display: none">
+        <section class="content-card">
+          <h2 data-i18n="thesis_title">畢業專題 (Senior Project)</h2>
+
+          <div
+            id="t-intro"
+            class="projects-grid"
+            style="grid-template-columns: 1fr"
+          >
+            <div class="project-card thesis-highlight">
+              <div class="card-image">
+                <img
+                  src="images/thesis_cover.png"
+                  alt="塵世之魂 封面"
+                  onerror="this.src='https://placehold.co/800x400/111/ffd700?text=Dust+Soul'"
+                />
+              </div>
+              <div class="card-info">
+                <h3 data-i18n="t_name">《塵世之魂》 (Dust Soul)</h3>
+                <p>
+                  <strong data-i18n="t_quote"
+                    >「這世上不存在所謂無罪之人。」</strong
+                  ><br />
+                  <span data-i18n="t_intro"
+                    >本作品由「冬山再起工作室」開發，是一款 2D
+                    橫向卷軸的類銀河惡魔城遊戲
+                    (Metroidvania)。玩家將扮演手持黑劍的少女，在生與死的夾縫中戰鬥，直到世界終結。</span
+                  >
+                </p>
+                <br />
+                <div class="card-links" style="flex-wrap: wrap">
+                  <a
+                    href="https://youtu.be/8iHJN6pALOM?si=oyLqHdpK4IqQFrla"
+                    target="_blank"
+                    class="link-btn outline"
+                    style="border-color: #ffd700; color: #ffd700"
+                    data-i18n="btn_video"
+                    >宣傳影片</a
+                  >
+                  <a
+                    href="https://portfolioandlhu.wixsite.com/my-site-5/you-xi-zu/%E5%A1%B5%E4%B8%96%E4%B9%8B%E9%AD%82"
+                    target="_blank"
+                    class="link-btn outline"
+                    style="border-color: #ffd700; color: #ffd700"
+                    data-i18n="btn_site"
+                    >學校專題頁</a
+                  >
+                  <a
+                    href="files/project_report.docx"
+                    download
+                    class="link-btn"
+                    style="background: #ffd700; color: #000; border: none"
+                    data-i18n="btn_download"
+                    >📥 下載完整企劃書</a
+                  >
                 </div>
+              </div>
+            </div>
+          </div>
 
-                <h5 style="color:#aaa; margin-bottom:10px; font-size:0.9rem;" data-i18n="cat_tools">生產力工具</h5>
-                <div class="skills-container" style="margin-top:0;">
-                    <span class="skill-tag">Axure RP</span>
-                    <span class="skill-tag">Git / Github</span>
-                    <span class="skill-tag">HTML5 / CSS3</span>
+          <h3
+            id="t-world"
+            class="thesis-section-title"
+            data-i18n="t_world_title"
+          >
+            世界觀：聖錫亞多姆
+          </h3>
+          <div class="worldview-container">
+            <div class="worldview-text">
+              <p data-i18n="t_world_p1">
+                這是一個名為「聖錫亞多姆」的神治國，表面上由神明引導，實則是一個被信仰體制徹底操控的世界，人民從出生便接受【聖痕】的印記，生活在絕對的信仰監控與等級制度下。
+              </p>
+              <p data-i18n="t_world_p2">
+                神的意志透過核心裝置「血池」監視民眾，而信仰與貢獻成為衡量生命價值的唯一標準，那些無法服從、或試圖質疑的人，將被標記為【異端】，非死即瘋，最終成為血池的養分或怪物守衛。
+              </p>
+              <p data-i18n="t_world_p3">
+                在這片壓抑到近乎絕望的世界中，一位少女的怒火與靈魂成為對抗神明虛偽的火種。
+              </p>
+            </div>
+            <div class="poster-container">
+              <img
+                src="images/thesis_poster.jpg"
+                alt="Poster"
+                onerror="this.src='https://placehold.co/800x1200/111/ffd700?text=Poster'"
+              />
+            </div>
+          </div>
+
+          <h3 id="t-game" class="thesis-section-title" data-i18n="t_game_title">
+            實機畫面 (Gameplay)
+          </h3>
+          <div class="carousel-container" id="game-carousel">
+            <div class="carousel-slide active">
+              <img src="images/game_s1.png" alt="S1" />
+            </div>
+            <div class="carousel-slide">
+              <img src="images/game_s2.png" alt="S2" />
+            </div>
+            <div class="carousel-slide">
+              <img src="images/game_s3.png" alt="S3" />
+            </div>
+            <div class="carousel-slide">
+              <img src="images/game_s4.png" alt="S4" />
+            </div>
+            <div class="carousel-slide">
+              <img src="images/game_s5.png" alt="S5" />
+            </div>
+            <div class="carousel-slide">
+              <img src="images/game_s6.png" alt="S6" />
+            </div>
+
+            <button class="carousel-btn prev-btn" onclick="moveCarousel(-1)">
+              ❮
+            </button>
+            <button class="carousel-btn next-btn" onclick="moveCarousel(1)">
+              ❯
+            </button>
+          </div>
+
+          <h3 id="t-char" class="thesis-section-title" data-i18n="t_char_title">
+            主要角色介紹
+          </h3>
+          <div class="char-grid">
+            <div class="char-card">
+              <div class="char-img-container">
+                <img
+                  src="images/char_main.png"
+                  alt="Bethany"
+                  class="char-img"
+                />
+              </div>
+              <div class="char-text">
+                <h4>
+                  <span data-i18n="char_b_name">貝瑟妮</span>
+                  <span class="char-sub" data-i18n="char_b_title"
+                    >- 神之女</span
+                  >
+                </h4>
+                <p>
+                  <strong data-i18n="char_b_quote"
+                    >「既然神不慈悲，那就由我來斬斷這一切。」</strong
+                  >
+                </p>
+                <p data-i18n="char_b_desc1">
+                  16歲，出身內環區公職家庭。逃亡至偏僻小鎮時，眼睜睜看著雙親為了保護自己而遭騎士團殺害。她在昏迷的夢中感受到靈魂流入，甦醒後傷口癒合、手中的聖痕轉為黑色，並多了一把劍。
+                </p>
+                <p data-i18n="char_b_desc2">
+                  性格壓抑、不擅言詞，對陌生人有強烈排斥感。但面對敵人時會展現出瘋狂的一面（例如大笑補刀）。雖然世人視她為復仇惡魔，但她的內心仍舊是那名定格於16歲的受傷少女。
+                </p>
+              </div>
+            </div>
+            <div class="char-card reverse">
+              <div class="char-img-container">
+                <img
+                  src="images/char_sub.png"
+                  alt="Gabriella"
+                  class="char-img"
+                />
+              </div>
+              <div class="char-text">
+                <h4>
+                  <span data-i18n="char_g_name">加布麗拉</span>
+                  <span class="char-sub" data-i18n="char_g_title"
+                    >- 上帝的使者</span
+                  >
+                </h4>
+                <p>
+                  <strong data-i18n="char_g_quote"
+                    >「如果是妳的話，一定能改變這個世界吧？」</strong
+                  >
+                </p>
+                <p data-i18n="char_g_desc1">
+                  12歲，出生外環區。因擁有讓折斷花朵復原的「治癒」能力，被教會視為魔女。父母試圖藏匿她，卻因恐懼被聖痕感知。
+                </p>
+                <p data-i18n="char_g_desc2">
+                  鎮長毫不猶豫地舉報了她們一家。加布麗拉在突破騎士團包圍的逃亡路上，偶遇了剛甦醒的貝瑟妮，兩人雖性格迥異（善良無防備
+                  vs 壓抑復仇者），卻在絕望中結下了不解之緣。
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <h3 id="t-team" class="thesis-section-title" data-i18n="t_team_title">
+            開發團隊 (冬山再起工作室)
+          </h3>
+          <div class="team-list">
+            <div class="team-member leader">
+              <img src="images/member_lijie.png" class="member-avatar" />
+              <h5 data-i18n="team_lijie">黃立杰 (隊長)</h5>
+              <span data-i18n="role_lijie">企劃 / 關卡 / 玩法</span>
+            </div>
+            <div class="team-member">
+              <img src="images/member_boquan.jpg" class="member-avatar" />
+              <h5 data-i18n="team_boquan">王柏權</h5>
+              <span data-i18n="role_boquan">劇本 / 動作設計</span>
+            </div>
+            <div class="team-member">
+              <img src="images/member_zishen.jpg" class="member-avatar" />
+              <h5 data-i18n="team_zishen">李梓燊</h5>
+              <span data-i18n="role_zishen">特效 / UI / 程式</span>
+            </div>
+            <div class="team-member">
+              <img src="images/member_yujun.png" class="member-avatar" />
+              <h5 data-i18n="team_yujun">陳昱均</h5>
+              <span data-i18n="role_yujun">程式 / 數值設計</span>
+            </div>
+            <div class="team-member">
+              <img
+                src="images/member_borui.png"
+                class="member-avatar member-borui-img"
+              />
+              <h5 data-i18n="team_borui">邱柏睿</h5>
+              <span data-i18n="role_borui">美術 / 動作設計</span>
+            </div>
+            <div class="team-member">
+              <img src="images/member_haojun.jpg" class="member-avatar" />
+              <h5 data-i18n="team_haojun">潘皓均</h5>
+              <span data-i18n="role_haojun">音效 / 程式</span>
+            </div>
+          </div>
+
+          <h3
+            id="t-contrib"
+            class="thesis-section-title"
+            style="margin-top: 80px"
+            data-i18n="contrib_title"
+          >
+            個人貢獻 (My Contribution)
+          </h3>
+
+          <div id="t-docs"></div>
+          <div
+            class="content-card"
+            style="
+              border-left: 5px solid #ffd700;
+              background: rgba(255, 215, 0, 0.05);
+            "
+          >
+            <div class="article-body">
+              <h4
+                style="
+                  color: #ffd700;
+                  margin-bottom: 30px;
+                  font-size: 1.6rem;
+                  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+                  padding-bottom: 15px;
+                "
+                data-i18n="contrib_role_title"
+              >
+                黃立杰 (隊長 / 企劃 / 關卡)
+              </h4>
+
+              <div style="margin-bottom: 50px">
+                <h5
+                  style="
+                    color: #fff;
+                    font-size: 1.3rem;
+                    margin-bottom: 15px;
+                    display: flex;
+                    align-items: center;
+                  "
+                >
+                  <span style="color: #64b5f6; margin-right: 10px">🛠️</span>
+                  <span data-i18n="contrib_sys_title">1. 系統架構設計</span>
+                </h5>
+                <p
+                  style="color: #ccc; line-height: 1.8; margin-bottom: 20px"
+                  data-i18n="contrib_sys_desc"
+                >
+                  負責規劃遊戲整體運作邏輯，確保各系統模組（角色、AI、資料存取）之間的資料流向清晰且易於維護。
+                </p>
+                <div class="chart-container" style="margin-bottom: 15px">
+                  <img
+                    src="images/thesis_mindmap.png"
+                    alt="心智圖"
+                    title="點擊檢視大圖"
+                    style="max-height: 400px; object-fit: contain; width: 100%"
+                  />
+                  <div class="chart-caption" data-i18n="contrib_sys_cap1">
+                    ▲ 遊戲系統架構心智圖
+                  </div>
                 </div>
-            </section>
-
-             <section class="content-card">
-                <h2 data-i18n="exp_title">經歷</h2>
-                <div class="experience-list">
-                    <div class="experience-item">
-                        <span class="experience-date" data-i18n="date_research">2023/09 – 迄今</span>
-                        <h3 class="experience-title" data-i18n="job_research_title">AI 技術應用研究 (個人計畫)</h3>
-                        <p class="experience-desc" data-i18n="job_research_desc">致力於研究 Generative AI 工具的使用方式，並嘗試將其導入遊戲開發流程與網頁互動中，進行技術再現與測試。</p>
-                    </div>
-                    <div class="experience-item">
-                        <span class="experience-date">2024/07 - 2024/08</span>
-                        <h3 class="experience-title" data-i18n="job_px_title">全聯福利中心 - 收銀員</h3>
-                        <p class="experience-desc" data-i18n="job_px_desc">在快節奏的環境下保持冷靜與精準，培養了良好的抗壓性與即時問題解決能力。</p>
-                    </div>
-                    <div class="experience-item">
-                        <span class="experience-date">2020/02 - 2022/05</span>
-                        <h3 class="experience-title" data-i18n="job_gas_title">金龍瓦斯股份有限公司 - 財務／會計助理</h3>
-                        <p class="experience-desc" data-i18n="job_gas_desc">協助處理帳務與報表。這段經歷訓練了我對數據的敏感度，以及處理繁瑣事務時的細心與耐性。</p>
-                    </div>
+                <div class="chart-container">
+                  <img
+                    src="images/thesis_flowchart.jpg"
+                    alt="流程圖"
+                    title="點擊檢視大圖"
+                    style="max-height: 400px; object-fit: contain; width: 100%"
+                  />
+                  <div class="chart-caption" data-i18n="contrib_sys_cap2">
+                    ▲ 遊戲運作邏輯流程圖
+                  </div>
                 </div>
-            </section>
+              </div>
 
-             <section class="content-card">
-                <h2 data-i18n="edu_title">學歷</h2>
-                <div class="experience-list">
-                    <div class="experience-item">
-                        <span class="experience-date" data-i18n="date_lhu">2022 - 2026 (預期)</span>
-                        <h3 class="experience-title" data-i18n="edu_lhu_title">龍華科技大學 - 多媒體與遊戲發展科學系</h3>
-                        <p class="experience-desc" data-i18n="edu_lhu_desc">主修多媒體互動與遊戲開發。在學期間擔任專題組長，負責專案統籌與企劃設計。</p>
-                    </div>
-                    <div class="experience-item">
-                        <span class="experience-date">2019 - 2022</span>
-                        <h3 class="experience-title" data-i18n="edu_hs_title">羅東高級商業學校 - 商業經營科</h3>
-                        <p class="experience-desc" data-i18n="edu_hs_desc">建立商業基礎與邏輯思維。</p>
-                    </div>
+              <div style="margin-bottom: 50px">
+                <h5
+                  style="
+                    color: #fff;
+                    font-size: 1.3rem;
+                    margin-bottom: 15px;
+                    display: flex;
+                    align-items: center;
+                  "
+                >
+                  <span style="color: #ff4081; margin-right: 10px">🗺️</span>
+                  <span data-i18n="contrib_lvl_title">2. 關卡與區域設計</span>
+                </h5>
+                <p
+                  style="color: #ccc; line-height: 1.8; margin-bottom: 20px"
+                  data-i18n="contrib_lvl_desc"
+                >
+                  設計「第一區域」的完整探索動線。透過線性的劇情引導與非線性的分支探索，平衡敘事節奏與戰鬥體驗。
+                </p>
+                <div class="chart-container">
+                  <img
+                    src="images/thesis_level_design_map.jpg"
+                    alt="Level Map"
+                    title="點擊檢視大圖"
+                  />
+                  <div class="chart-caption" data-i18n="contrib_lvl_cap">
+                    ▲ 第一區域完整動線設計草圖
+                  </div>
                 </div>
-            </section>
-        </div>
+                <ul
+                  style="
+                    margin-top: 15px;
+                    color: #aaa;
+                    font-size: 0.95rem;
+                    line-height: 1.8;
+                  "
+                >
+                  <li>
+                    <strong data-i18n="contrib_lvl_li1_t">動線規劃：</strong>
+                    <span data-i18n="contrib_lvl_li1_d"
+                      >設計「回字形」或「分岔」路徑，引導玩家在探索後能回到主幹道。</span
+                    >
+                  </li>
+                  <li>
+                    <strong data-i18n="contrib_lvl_li2_t">隱藏要素：</strong>
+                    <span data-i18n="contrib_lvl_li2_d"
+                      >在地圖左下角配置隱藏圖（圖七），獎勵喜歡深入探索的玩家。</span
+                    >
+                  </li>
+                </ul>
+              </div>
 
-        <div id="section-works" style="display: none;">
-            <section class="content-card">
-                <h2 data-i18n="project_title">精選作品</h2>
-                <div class="projects-grid">
-                    <div class="project-card">
-                        <div class="card-image"><img src="https://placehold.co/600x400/0f172a/64b5f6?text=Seth+AI" alt="AI Project"></div>
-                        <div class="card-info">
-                            <h3 data-i18n="work_seth_title">Seth: AI 虛擬助理研究</h3>
-                            <p data-i18n="work_seth_desc">這是一個結合 Google Gemini API 與 Web 3D 技術的實驗性專案。透過串接大語言模型，讓 3D VRM 角色具備對話能力，探索未來網頁互動的可能性。</p>
-                            <div class="card-links">
-                                <a href="#" class="link-btn" data-i18n="btn_details">目前頁面即展示</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="project-card">
-                        <div class="card-image"><img src="images/thesis_cover.png" alt="Dust Soul" onerror="this.src='https://placehold.co/600x400/333/ffd700?text=Dust+Soul'"></div>
-                        <div class="card-info">
-                            <h3 data-i18n="t_name">《塵世之魂》 (Dust Soul)</h3>
-                            <p data-i18n="work_dust_desc">擔任隊長與企劃。負責世界觀架構（基於心理學與社會學概念）、系統邏輯規劃以及關卡動線設計。協調程式與美術團隊，確保專案如期完成。</p>
-                            <div class="card-links">
-                                <a href="#" onclick="switchSection('thesis')" class="link-btn" data-i18n="btn_details">查看完整專題</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
+              <div>
+                <h5
+                  style="
+                    color: #fff;
+                    font-size: 1.3rem;
+                    margin-bottom: 15px;
+                    display: flex;
+                    align-items: center;
+                  "
+                >
+                  <span style="color: #ffd700; margin-right: 10px">📋</span>
+                  <span data-i18n="contrib_pm_title">3. 專案統籌與企劃</span>
+                </h5>
+                <ul
+                  style="
+                    list-style: none;
+                    padding: 0;
+                    line-height: 2;
+                    color: #ddd;
+                  "
+                >
+                  <li
+                    style="
+                      margin-bottom: 10px;
+                      padding-left: 20px;
+                      border-left: 2px solid #555;
+                    "
+                  >
+                    <strong style="color: #fff" data-i18n="contrib_pm_li1_t"
+                      >🎯 專案管理：</strong
+                    >
+                    <span data-i18n="contrib_pm_li1_d"
+                      >擔任隊長，負責時程控管、成員工作分配，協調美術與程式技術對接。</span
+                    >
+                  </li>
+                  <li
+                    style="
+                      margin-bottom: 10px;
+                      padding-left: 20px;
+                      border-left: 2px solid #555;
+                    "
+                  >
+                    <strong style="color: #fff" data-i18n="contrib_pm_li2_t"
+                      >⚔️ 戰鬥設計：</strong
+                    >
+                    <span data-i18n="contrib_pm_li2_d"
+                      >調整主角攻擊手感、判定範圍與敵人 AI
+                      行為模式（靈魂吸收系統）。</span
+                    >
+                  </li>
+                  <li style="padding-left: 20px; border-left: 2px solid #555">
+                    <strong style="color: #fff" data-i18n="contrib_pm_li3_t"
+                      >📄 世界觀撰寫：</strong
+                    >
+                    <span data-i18n="contrib_pm_li3_d"
+                      >設定「聖痕」、「血池」等核心概念，並撰寫 NPC
+                      對話文本。</span
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
 
-        <div id="section-thesis" style="display: none;">
-            <section class="content-card">
-                <h2 data-i18n="thesis_title">畢業專題 (Senior Project)</h2>
-                
-                <div id="t-intro" class="projects-grid" style="grid-template-columns: 1fr;"> 
-                    <div class="project-card thesis-highlight">
-                        <div class="card-image">
-                            <img src="images/thesis_cover.png" alt="塵世之魂 封面" onerror="this.src='https://placehold.co/800x400/111/ffd700?text=Dust+Soul'">
-                        </div>
-                        <div class="card-info">
-                            <h3 data-i18n="t_name">《塵世之魂》 (Dust Soul)</h3>
-                            <p>
-                                <strong data-i18n="t_quote">「這世上不存在所謂無罪之人。」</strong><br>
-                                <span data-i18n="t_intro">本作品由「冬山再起工作室」開發，是一款 2D 橫向卷軸的類銀河惡魔城遊戲 (Metroidvania)。玩家將扮演手持黑劍的少女，在生與死的夾縫中戰鬥，直到世界終結。</span>
-                            </p>
-                            <br>
-                            <div class="card-links" style="flex-wrap: wrap;">
-                                <a href="https://youtu.be/8iHJN6pALOM?si=oyLqHdpK4IqQFrla" target="_blank" class="link-btn outline" style="border-color: #ffd700; color: #ffd700;" data-i18n="btn_video">宣傳影片</a>
-                                <a href="https://portfolioandlhu.wixsite.com/my-site-5/you-xi-zu/%E5%A1%B5%E4%B8%96%E4%B9%8B%E9%AD%82" target="_blank" class="link-btn outline" style="border-color: #ffd700; color: #ffd700;" data-i18n="btn_site">學校專題頁</a>
-                                <a href="files/project_report.docx" download class="link-btn" style="background: #ffd700; color: #000; border: none;" data-i18n="btn_download">📥 下載完整企劃書</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <h3 id="t-world" class="thesis-section-title" data-i18n="t_world_title">世界觀：聖錫亞多姆</h3>
-                <div class="worldview-container">
-                    <div class="worldview-text">
-                        <p data-i18n="t_world_p1">這是一個名為「聖錫亞多姆」的神治國，表面上由神明引導，實則是一個被信仰體制徹底操控的世界，人民從出生便接受【聖痕】的印記，生活在絕對的信仰監控與等級制度下。</p>
-                        <p data-i18n="t_world_p2">神的意志透過核心裝置「血池」監視民眾，而信仰與貢獻成為衡量生命價值的唯一標準，那些無法服從、或試圖質疑的人，將被標記為【異端】，非死即瘋，最終成為血池的養分或怪物守衛。</p>
-                        <p data-i18n="t_world_p3">在這片壓抑到近乎絕望的世界中，一位少女的怒火與靈魂成為對抗神明虛偽的火種。</p>
-                    </div>
-                    <div class="poster-container">
-                        <img src="images/thesis_poster.jpg" alt="Poster" onerror="this.src='https://placehold.co/800x1200/111/ffd700?text=Poster'">
-                    </div>
-                </div>
-
-                <h3 id="t-game" class="thesis-section-title" data-i18n="t_game_title">實機畫面 (Gameplay)</h3>
-                <div class="carousel-container" id="game-carousel">
-                    <div class="carousel-slide active"><img src="images/game_s1.png" alt="S1"></div>
-                    <div class="carousel-slide"><img src="images/game_s2.png" alt="S2"></div>
-                    <div class="carousel-slide"><img src="images/game_s3.png" alt="S3"></div>
-                    <div class="carousel-slide"><img src="images/game_s4.png" alt="S4"></div>
-                    <div class="carousel-slide"><img src="images/game_s5.png" alt="S5"></div>
-                    <div class="carousel-slide"><img src="images/game_s6.png" alt="S6"></div>
-                    
-                    <button class="carousel-btn prev-btn" onclick="moveCarousel(-1)">❮</button>
-                    <button class="carousel-btn next-btn" onclick="moveCarousel(1)">❯</button>
-                </div>
-
-                <h3 id="t-char" class="thesis-section-title" data-i18n="t_char_title">主要角色介紹</h3>
-                <div class="char-grid">
-                    <div class="char-card">
-                        <div class="char-img-container"><img src="images/char_main.png" alt="Bethany" class="char-img"></div>
-                        <div class="char-text">
-                            <h4><span data-i18n="char_b_name">貝瑟妮</span> <span class="char-sub" data-i18n="char_b_title">- 神之女</span></h4>
-                            <p><strong data-i18n="char_b_quote">「既然神不慈悲，那就由我來斬斷這一切。」</strong></p>
-                            <p data-i18n="char_b_desc1">16歲，出身內環區公職家庭。逃亡至偏僻小鎮時，眼睜睜看著雙親為了保護自己而遭騎士團殺害。她在昏迷的夢中感受到靈魂流入，甦醒後傷口癒合、手中的聖痕轉為黑色，並多了一把劍。</p>
-                            <p data-i18n="char_b_desc2">性格壓抑、不擅言詞，對陌生人有強烈排斥感。但面對敵人時會展現出瘋狂的一面（例如大笑補刀）。雖然世人視她為復仇惡魔，但她的內心仍舊是那名定格於16歲的受傷少女。</p>
-                        </div>
-                    </div>
-                    <div class="char-card reverse">
-                        <div class="char-img-container"><img src="images/char_sub.png" alt="Gabriella" class="char-img"></div>
-                        <div class="char-text">
-                            <h4><span data-i18n="char_g_name">加布麗拉</span> <span class="char-sub" data-i18n="char_g_title">- 上帝的使者</span></h4>
-                            <p><strong data-i18n="char_g_quote">「如果是妳的話，一定能改變這個世界吧？」</strong></p>
-                            <p data-i18n="char_g_desc1">12歲，出生外環區。因擁有讓折斷花朵復原的「治癒」能力，被教會視為魔女。父母試圖藏匿她，卻因恐懼被聖痕感知。</p>
-                            <p data-i18n="char_g_desc2">鎮長毫不猶豫地舉報了她們一家。加布麗拉在突破騎士團包圍的逃亡路上，偶遇了剛甦醒的貝瑟妮，兩人雖性格迥異（善良無防備 vs 壓抑復仇者），卻在絕望中結下了不解之緣。</p>
-                        </div>
-                    </div>
-                </div>
-
-                <h3 id="t-team" class="thesis-section-title" data-i18n="t_team_title">開發團隊 (冬山再起工作室)</h3>
-                <div class="team-list">
-                    <div class="team-member leader">
-                        <img src="images/member_lijie.png" class="member-avatar">
-                        <h5 data-i18n="team_lijie">黃立杰 (隊長)</h5><span data-i18n="role_lijie">企劃 / 關卡 / 玩法</span>
-                    </div>
-                    <div class="team-member">
-                        <img src="images/member_boquan.jpg" class="member-avatar">
-                        <h5 data-i18n="team_boquan">王柏權</h5><span data-i18n="role_boquan">劇本 / 動作設計</span>
-                    </div>
-                    <div class="team-member">
-                        <img src="images/member_zishen.jpg" class="member-avatar">
-                        <h5 data-i18n="team_zishen">李梓燊</h5><span data-i18n="role_zishen">特效 / UI / 程式</span>
-                    </div>
-                    <div class="team-member">
-                        <img src="images/member_yujun.png" class="member-avatar">
-                        <h5 data-i18n="team_yujun">陳昱均</h5><span data-i18n="role_yujun">程式 / 數值設計</span>
-                    </div>
-                    <div class="team-member">
-                        <img src="images/member_borui.png" class="member-avatar member-borui-img">
-                        <h5 data-i18n="team_borui">邱柏睿</h5><span data-i18n="role_borui">美術 / 動作設計</span>
-                    </div>
-                    <div class="team-member">
-                        <img src="images/member_haojun.jpg" class="member-avatar">
-                        <h5 data-i18n="team_haojun">潘皓均</h5><span data-i18n="role_haojun">音效 / 程式</span>
-                    </div>
-                </div>
-
-                <h3 id="t-contrib" class="thesis-section-title" style="margin-top: 80px;" data-i18n="contrib_title">個人貢獻 (My Contribution)</h3>
-                
-                <div id="t-docs"></div> <div class="content-card" style="border-left: 5px solid #ffd700; background: rgba(255, 215, 0, 0.05);">
-                    <div class="article-body">
-                        <h4 style="color: #ffd700; margin-bottom: 30px; font-size: 1.6rem; border-bottom: 1px solid rgba(255,215,0,0.2); padding-bottom: 15px;" data-i18n="contrib_role_title">
-                            黃立杰 (隊長 / 企劃 / 關卡)
-                        </h4>
-
-                        <div style="margin-bottom: 50px;">
-                            <h5 style="color: #fff; font-size: 1.3rem; margin-bottom: 15px; display: flex; align-items: center;">
-                                <span style="color: #64b5f6; margin-right: 10px;">🛠️</span> <span data-i18n="contrib_sys_title">1. 系統架構設計</span>
-                            </h5>
-                            <p style="color: #ccc; line-height: 1.8; margin-bottom: 20px;" data-i18n="contrib_sys_desc">
-                                負責規劃遊戲整體運作邏輯，確保各系統模組（角色、AI、資料存取）之間的資料流向清晰且易於維護。
-                            </p>
-                            <div class="chart-container" style="margin-bottom: 15px;">
-                                <img src="images/thesis_mindmap.png" alt="心智圖" title="點擊檢視大圖" style="max-height: 400px; object-fit: contain; width: 100%;">
-                                <div class="chart-caption" data-i18n="contrib_sys_cap1">▲ 遊戲系統架構心智圖</div>
-                            </div>
-                            <div class="chart-container">
-                                <img src="images/thesis_flowchart.jpg" alt="流程圖" title="點擊檢視大圖" style="max-height: 400px; object-fit: contain; width: 100%;">
-                                <div class="chart-caption" data-i18n="contrib_sys_cap2">▲ 遊戲運作邏輯流程圖</div>
-                            </div>
-                        </div>
-
-                        <div style="margin-bottom: 50px;">
-                            <h5 style="color: #fff; font-size: 1.3rem; margin-bottom: 15px; display: flex; align-items: center;">
-                                <span style="color: #ff4081; margin-right: 10px;">🗺️</span> <span data-i18n="contrib_lvl_title">2. 關卡與區域設計</span>
-                            </h5>
-                            <p style="color: #ccc; line-height: 1.8; margin-bottom: 20px;" data-i18n="contrib_lvl_desc">
-                                設計「第一區域」的完整探索動線。透過線性的劇情引導與非線性的分支探索，平衡敘事節奏與戰鬥體驗。
-                            </p>
-                            <div class="chart-container">
-                                <img src="images/thesis_level_design_map.jpg" alt="Level Map" title="點擊檢視大圖">
-                                <div class="chart-caption" data-i18n="contrib_lvl_cap">▲ 第一區域完整動線設計草圖</div>
-                            </div>
-                            <ul style="margin-top: 15px; color: #aaa; font-size: 0.95rem; line-height: 1.8;">
-                                <li><strong data-i18n="contrib_lvl_li1_t">動線規劃：</strong> <span data-i18n="contrib_lvl_li1_d">設計「回字形」或「分岔」路徑，引導玩家在探索後能回到主幹道。</span></li>
-                                <li><strong data-i18n="contrib_lvl_li2_t">隱藏要素：</strong> <span data-i18n="contrib_lvl_li2_d">在地圖左下角配置隱藏圖（圖七），獎勵喜歡深入探索的玩家。</span></li>
-                            </ul>
-                        </div>
-
-                        <div>
-                            <h5 style="color: #fff; font-size: 1.3rem; margin-bottom: 15px; display: flex; align-items: center;">
-                                <span style="color: #ffd700; margin-right: 10px;">📋</span> <span data-i18n="contrib_pm_title">3. 專案統籌與企劃</span>
-                            </h5>
-                            <ul style="list-style: none; padding: 0; line-height: 2; color: #ddd;">
-                                <li style="margin-bottom: 10px; padding-left: 20px; border-left: 2px solid #555;">
-                                    <strong style="color: #fff;" data-i18n="contrib_pm_li1_t">🎯 專案管理：</strong> <span data-i18n="contrib_pm_li1_d">擔任隊長，負責時程控管、成員工作分配，協調美術與程式技術對接。</span>
-                                </li>
-                                <li style="margin-bottom: 10px; padding-left: 20px; border-left: 2px solid #555;">
-                                    <strong style="color: #fff;" data-i18n="contrib_pm_li2_t">⚔️ 戰鬥設計：</strong> <span data-i18n="contrib_pm_li2_d">調整主角攻擊手感、判定範圍與敵人 AI 行為模式（靈魂吸收系統）。</span>
-                                </li>
-                                <li style="padding-left: 20px; border-left: 2px solid #555;">
-                                    <strong style="color: #fff;" data-i18n="contrib_pm_li3_t">📄 世界觀撰寫：</strong> <span data-i18n="contrib_pm_li3_d">設定「聖痕」、「血池」等核心概念，並撰寫 NPC 對話文本。</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <div id="section-contact" style="display: none;">
-            <section class="content-card">
-                <h2 data-i18n="contact_title">聯絡資訊</h2>
-                <div class="article-body">
-                    <p data-i18n="contact_intro">如果您對我的作品感興趣，或有任何合作機會，歡迎透過以下方式聯繫我：</p>
-                    <div style="margin-top: 20px; line-height: 2;">
-                        <p><strong>👤 <span data-i18n="label_name">姓名</span>：</strong> <span data-i18n="my_name">黃立杰</span></p>
-                        <p><strong>📞 <span data-i18n="label_phone">電話</span>：</strong> +886930975446</p>
-                        <p><strong>📧 <span data-i18n="label_email">電子信箱</span>：</strong> <a href="mailto:lijie.huang.88@gmail.com" style="color: var(--accent-color);">lijie.huang.88@gmail.com</a></p>
-                        <p><strong>📍 <span data-i18n="label_address">地址</span>：</strong> <span data-i18n="my_address">宜蘭縣冬山鄉</span></p>
-                    </div>
-                </div>
-            </section>
-        </div>
+      <div id="section-contact" style="display: none">
+        <section class="content-card">
+          <h2 data-i18n="contact_title">聯絡資訊</h2>
+          <div class="article-body">
+            <p data-i18n="contact_intro">
+              如果您對我的作品感興趣，或有任何合作機會，歡迎透過以下方式聯繫我：
+            </p>
+            <div style="margin-top: 20px; line-height: 2">
+              <p>
+                <strong>👤 <span data-i18n="label_name">姓名</span>：</strong>
+                <span data-i18n="my_name">黃立杰</span>
+              </p>
+              <p>
+                <strong>📞 <span data-i18n="label_phone">電話</span>：</strong>
+                +886930975446
+              </p>
+              <p>
+                <strong
+                  >📧 <span data-i18n="label_email">電子信箱</span>：</strong
+                >
+                <a
+                  href="mailto:lijie.huang.88@gmail.com"
+                  style="color: var(--accent-color)"
+                  >lijie.huang.88@gmail.com</a
+                >
+              </p>
+              <p>
+                <strong
+                  >📍 <span data-i18n="label_address">地址</span>：</strong
+                >
+                <span data-i18n="my_address">宜蘭縣冬山鄉</span>
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
     </main>
 
     <div id="chat-trigger" onclick="toggleChat()"></div>
     <div id="chat-widget">
-        <div class="chat-header">
-            <h3><div class="status-dot"></div> Seth</h3>
-        </div>
-        <div class="chat-messages" id="chat-history">
-            <div class="message msg-ai">你好！我是 Seth。有什麼需要幫忙的嗎？</div>
-        </div>
-        <div class="chat-input-area">
-            <input type="text" id="user-input" placeholder="輸入訊息..." onkeypress="handleKeyPress(event)">
-            <button id="send-btn" onclick="sendMessage()">➤</button>
-        </div>
+      <div class="chat-header">
+        <h3>
+          <div class="status-dot"></div>
+          Seth
+        </h3>
+      </div>
+      <div class="chat-messages" id="chat-history">
+        <div class="message msg-ai">你好！我是 Seth。有什麼需要幫忙的嗎？</div>
+      </div>
+      <div class="chat-input-area">
+        <input
+          type="text"
+          id="user-input"
+          placeholder="輸入訊息..."
+          onkeypress="handleKeyPress(event)"
+        />
+        <button id="send-btn" onclick="sendMessage()">➤</button>
+      </div>
     </div>
-<script type="module" src="script.js"></script>
-</body>
+    <script type="module" src="script.js"></script>
+  </body>
 </html>

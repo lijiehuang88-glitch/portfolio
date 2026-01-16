@@ -602,3 +602,146 @@ body.chat-active #close-chat-btn {
     
     .poster-container { max-width: 100%; }
 }
+/* === 手機版優化：讓 ST 不會被擋住，對話框更好按 === */
+@media (max-width: 768px) {
+    
+    /* 1. 調整 3D 模型高度，讓它佔據上半部 */
+    #canvas-container {
+        height: 55vh; /* 佔螢幕高度 55% */
+        width: 100%;
+        position: fixed; /* 固定在上方 */
+        top: 0;
+        left: 0;
+        z-index: 1;
+    }
+
+    /* 2. 聊天視窗改到底部，類似通訊軟體 */
+    .chat-container {
+        width: 100%;           /* 滿版寬度 */
+        height: 45vh;          /* 佔據下方 45% */
+        position: fixed;       /* 固定在底部 */
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-radius: 20px 20px 0 0; /* 只有上方圓角 */
+        background: rgba(255, 255, 255, 0.95); /* 微透明白底 */
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+        z-index: 10;           /* 確保蓋在模型上面 */
+        margin: 0;             /* 移除邊距 */
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* 3. 對話紀錄區 */
+    #chat-history {
+        flex-grow: 1;          /* 自動填滿剩餘空間 */
+        padding: 15px;
+        font-size: 14px;       /* 手機字體適中 */
+    }
+
+    /* 4. 輸入框區域加大，好點擊 */
+    .input-area {
+        padding: 10px;
+        background: #f0f0f0;
+        border-top: 1px solid #ddd;
+        min-height: 60px;      /* 確保手指好按 */
+    }
+
+    #user-input {
+        font-size: 16px;       /* 防止 iPhone 自動放大 */
+        border-radius: 20px;
+        padding-left: 15px;
+    }
+
+    /* 5. 發送按鈕 */
+    #send-btn {
+        width: 50px;
+        height: 40px;
+        border-radius: 20px;
+        margin-left: 8px;
+    }
+}
+/* [style.css] 底部新增 */
+
+/* 新版技能列表樣式 */
+.skill-item-new {
+    margin-bottom: 15px;
+    background: rgba(255,255,255,0.03);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: 0.3s;
+}
+.skill-item-new:hover {
+    background: rgba(255,255,255,0.06);
+    transform: translateX(5px);
+    border-color: var(--accent-color);
+}
+
+/* === 手機版導覽選單樣式 (Mobile Menu) === */
+
+/* 預設隱藏手機版按鈕 (桌機不顯示) */
+#mobile-menu-btn {
+    display: none;
+}
+
+/* 手機版 RWD 設定 (螢幕 < 768px) */
+@media (max-width: 768px) {
+    
+    /* 1. 顯示左上角的漢堡按鈕 */
+    #mobile-menu-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 3000; /* 最上層 */
+        background: rgba(15, 23, 42, 0.9);
+        color: #fff;
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 8px;
+        font-size: 24px;
+        width: 45px;
+        height: 45px;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+
+    /* 2. 修改 Sidebar 為隱藏式側邊欄 */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 260px;
+        transform: translateX(-100%); /* 預設往左藏起來 */
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 2500;
+        box-shadow: 5px 0 20px rgba(0,0,0,0.5);
+        border-right: 1px solid rgba(255,255,255,0.1);
+        padding-top: 80px; /* 避開左上角按鈕 */
+    }
+
+    /* 3. 當 Sidebar 被啟動時 (Active) */
+    .sidebar.active {
+        transform: translateX(0); /* 滑出來 */
+    }
+
+    /* 4. 主內容區域調整 (移除原本的 margin-left) */
+    .main-content {
+        margin-left: 0 !important; 
+        width: 100%;
+        padding: 80px 20px 100px 20px; /* 上方留空間給按鈕 */
+    }
+    
+    /* 5. 點擊選單遮罩 (可選：如果要點背景關閉，需配合 JS) */
+    body.menu-open::before {
+        content: '';
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.6);
+        z-index: 2400;
+        backdrop-filter: blur(3px);
+    }
+}
